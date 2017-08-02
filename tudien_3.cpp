@@ -3,6 +3,9 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <limits>
+#include <cstring>
+#include <cstdlib>
 using namespace std;
 
 struct theloai{
@@ -12,30 +15,97 @@ struct theloai{
 };
 
 struct tu{
-	char tu[100];
+	string noidung_tu;             
 	int matheloai_tu;
 	vector<string> gttruong;  // gia tri truong
 };
+void putTheLoaiIntoStruct(){
+	ifstream fin;
+	fin.open("ds_theloai.txt");
+	
+	while (!fin.eof()){
+		theloai tl;
+		string ma_string, truong_string, str;
 
+		getline(fin,ma_string);
+		if (ma_string.empty()) break;               // neu khac rong thi tiep tuc
+		tl.matheloai = atoi(ma_string.c_str());     // gan ma the loai
+
+		getline(fin,tl.tentheloai);   		  // gan ten the loai
+
+		getline(fin,truong_string);         // truong_string: ___;___;___; con str la mot truong: ____ trong do
+		istringstream ss(truong_string);	// can phai getline 2 lan: lan 1 de lay toan bo line
+
+  		while (getline(ss,str,';')){        // lan 2 de lay ra cac truong, bo vao vector
+			tl.truong.push_back(str);        // gan cac truong
+		}
+
+		cout << tl.matheloai << endl;
+		cout << tl.tentheloai << endl;
+		for (int i = 0; i < tl.truong.size(); i++){
+			cout << tl.truong[i] << ";";
+		}
+		cout << "\n";
+		
+ }
+}
+// ==========================================================================================================================
 void timtu(string tukhoa);
 
+// ==========================================================================================================================
+void themtu(){
+	tu t;
+	
+	cin.ignore();
+	cout << "Nhap tu: ";
+	cin >> t.noidung_tu;
+	
+	cout << "Nhap ma the loai: ";
+	cin >> t.matheloai_tu;
+}
+
+// ==========================================================================================================================
 void themtheloai(){
 	theloai tl;
-	int n;     		    // so luong truong
+	int n, temp;     		    // n: so luong truong
 	string tentruong;   // Xau luu gia tri tam thoi
 	fstream f;
 
-	cout << "Nhap ma the loai: ";
-	cin >> tl.matheloai;
+	// MA THE LOAI
+ 	while (1) {
+    cout << "Nhap ma the loai: ";
+    cin >> temp;
+
+    if (cin.fail()) {
+    	cout << "Nhap sai dinh dang! Hay nhap so nguyen.\n\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');   // su dung ignore de >> ko trich xuat data tu stream nua
+        continue; 				
+    }
+    else break;
+	}
+	tl.matheloai = temp;
 	
-	cin.ignore(); 	// ignore \n ma cin >> str da bo qua
+	// TEN THE LOAI
+	cin.ignore(); 					// ignore \n ma cin >> str da bo qua
 	cout << "Nhap ten the loai: ";
 	getline (cin, tl.tentheloai);
 	
-	cout << "Nhap so truong cua '" <<tl.tentheloai << "' : ";
-	cin >> n;
-	
-	cin.ignore();
+	// CAC TRUONG - THUOC TINH
+ 	while (1) {
+    cout << "Nhap so truong cua '" << tl.tentheloai << "' : ";
+    cin >> n;
+
+    if (cin.fail()) {
+    	cout << "Nhap sai dinh dang! Hay nhap so nguyen.\n\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // su dung ignore de >> ko trich xuat data tu stream nua
+        continue; 				
+    }
+    else break;
+	}
+
+ 	cin.ignore();
 	for (int i = 0; i < n; i++){
 		cout << "Nhap ten truong thu " << i+1 << " : ";
 		getline (cin, tentruong);
@@ -44,15 +114,18 @@ void themtheloai(){
 	
 	// Ghi cau truc ra file
 	f.open("ds_theloai.txt",ios::app);
-	f << tl.matheloai << endl;
-	f << tl.tentheloai << endl;
-	for (int i = 0; i < tl.truong.size(); i++){
-		f << tl.truong[i] <<";";
+	if (f.is_open()){
+		f << tl.matheloai << endl;
+		f << tl.tentheloai << endl;
+		for (int i = 0; i < tl.truong.size(); i++){
+			f << tl.truong[i] <<";";
+		}
+		f << "\n";
+		f.close();
 	}
-	f << "\n";
-	f.close();
 }
 
+// ==========================================================================================================================
 char menu()
 {
 char choice;
@@ -87,11 +160,23 @@ int main() {
 			cin >> tukhoa;
 			break;
 			}
-
+		case '2':
+			{
+			system("cls");
+			themtu();
+			break;
+		    }
 		case '3':
 			{
 			system("cls");
 			themtheloai();
+			break;
+		    }
+		case '4':
+			{
+			system("cls");
+			ifstream fin;
+			putTheLoaiIntoStruct();
 			break;
 		    }
 		default: cout << "Thoat menu! " << endl;
