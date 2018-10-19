@@ -1,3 +1,3 @@
-# dictionary
+# Dictionary
 
-Simple dictionary in c++
+Simple dictionary in C++
